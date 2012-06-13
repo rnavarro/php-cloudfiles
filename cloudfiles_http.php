@@ -67,7 +67,6 @@ define("CDN_EMAIL", "X-Purge-Email");
 define("DESTINATION", "Destination");
 define("ETAG_HEADER", "ETag");
 define("LAST_MODIFIED_HEADER", "Last-Modified");
-define("CONTENT_DISPOSITION_HEADER", "Content-Disposition");
 define("CONTENT_TYPE_HEADER", "Content-Type");
 define("CONTENT_LENGTH_HEADER", "Content-Length");
 define("USER_AGENT_HEADER", "User-Agent");
@@ -115,7 +114,6 @@ class CF_Http
     private $_obj_delete_at;
     private $_obj_etag;
     private $_obj_last_modified;
-    private $_obj_content_disposition;
     private $_obj_content_type;
     private $_obj_content_length;
     private $_obj_metadata;
@@ -164,7 +162,7 @@ class CF_Http
         $this->_user_write_progress_callback_func = NULL;
         $this->_write_callback_type = NULL;
         $this->_text_list = array();
-        $this->_return_list = NULL;
+	$this->_return_list = NULL;
         $this->_account_metadata = array();
         $this->_account_key = NULL;
         $this->_account_container_count = 0;
@@ -178,7 +176,6 @@ class CF_Http
         $this->_obj_write_string = "";
         $this->_obj_etag = NULL;
         $this->_obj_last_modified = NULL;
-        $this->_obj_content_disposition = NULL;
         $this->_obj_content_type = NULL;
         $this->_obj_content_length = NULL;
         $this->_obj_metadata = array();
@@ -850,10 +847,6 @@ class CF_Http
             $hdrs[] = "Content-Type: " . $obj->content_type;
         }
 
-        if($obj->content_disposition) {
-            $hdrs[] = "Content-Disposition: " . $obj->content_disposition;
-        }
-
         $this->_init($conn_type);
         curl_setopt($this->connections[$conn_type],
                 CURLOPT_INFILE, $fp);
@@ -996,18 +989,17 @@ class CF_Http
         if (!$return_code) {
             $this->error_str .= ": Failed to obtain valid HTTP response.";
             return array(0, $this->error_str." ".$this->response_reason,
-                NULL, NULL, NULL, NULL, NULL, array(), NULL, NULL, NULL, array());
+                NULL, NULL, NULL, NULL, array(), NULL, NULL, NULL, array());
         }
 
         if ($return_code == 404) {
             return array($return_code, $this->response_reason,
-                NULL, NULL, NULL, NULL, NULL, array(), NULL, NULL, NULL, array());
+                NULL, NULL, NULL, NULL, array(), NULL, NULL, NULL, array());
         }
         if ($return_code == 204 || $return_code == 200) {
             return array($return_code,$this->response_reason,
                 $this->_obj_etag,
                 $this->_obj_last_modified,
-                $this->_obj_content_disposition,
                 $this->_obj_content_type,
                 $this->_obj_content_length,
                 $this->_obj_metadata,
@@ -1018,7 +1010,7 @@ class CF_Http
         }
         $this->error_str = "Unexpected HTTP return code: $return_code";
         return array($return_code, $this->error_str." ".$this->response_reason,
-                NULL, NULL, NULL, NULL, NULL, array(), NULL, NULL, NULL, array());
+                NULL, NULL, NULL, NULL, array(), NULL, NULL, NULL, array());
     }
 
     # COPY /v1/Account/Container/Object
@@ -1222,9 +1214,6 @@ class CF_Http
             break;
         case strtolower(LAST_MODIFIED_HEADER):
             $this->_obj_last_modified = $value;
-            break;
-        case strtolower(CONTENT_DISPOSITION_HEADER):
-            $this->_obj_content_disposition = $value;
             break;
         case strtolower(CONTENT_TYPE_HEADER):
             $this->_obj_content_type = $value;
