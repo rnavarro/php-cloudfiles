@@ -1888,6 +1888,7 @@ class CF_Object
     public $container;
     public $name;
     public $last_modified;
+    public $content_disposition;
     public $content_type;
     public $content_length;
     public $metadata;
@@ -1918,6 +1919,7 @@ class CF_Object
         $this->etag = NULL;
         $this->_etag_override = False;
         $this->last_modified = NULL;
+        $this->content_disposition = NULL;
         $this->content_type = NULL;
         $this->content_length = 0;
         $this->metadata = array();
@@ -2185,6 +2187,10 @@ class CF_Object
         return True;
     }
 
+    function sync_content_disposition() {
+        return $this->sync_metadata();
+    }
+
     /**
      * Store new Object metadata
      *
@@ -2223,7 +2229,7 @@ class CF_Object
      */
     function sync_metadata()
     {
-        if (!empty($this->metadata) || !empty($this->headers) || $this->manifest) {
+        if (!empty($this->metadata) || !empty($this->headers) || $this->manifest || !(empty($this->content_disposition))) {
             $status = $this->container->cfs_http->update_object($this);
             #if ($status == 401 && $this->_re_auth()) {
             #    return $this->sync_metadata();
@@ -2236,6 +2242,7 @@ class CF_Object
         }
         return False;
     }
+
     /**
      * Store new Object manifest
      *
@@ -2262,11 +2269,11 @@ class CF_Object
      * @return boolean <kbd>True</kbd> if successful, <kbd>False</kbd> otherwise
      * @throws InvalidResponseException unexpected response
      */
-
     function sync_manifest()
     {
         return $this->sync_metadata();
     }
+
     /**
      * Upload Object's data to Cloud Files
      *
@@ -2547,7 +2554,7 @@ class CF_Object
      */
     private function _initialize()
     {
-        list($status, $reason, $etag, $last_modified, $content_type,
+        list($status, $reason, $etag, $last_modified, $content_disposition, $content_type,
             $content_length, $metadata, $manifest, $headers) =
                 $this->container->cfs_http->head_object($this);
         #if ($status == 401 && $this->_re_auth()) {
@@ -2562,6 +2569,7 @@ class CF_Object
         }
         $this->etag = $etag;
         $this->last_modified = $last_modified;
+        $this->content_disposition = $content_disposition;
         $this->content_type = $content_type;
         $this->content_length = $content_length;
         $this->metadata = $metadata;
