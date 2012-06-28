@@ -254,7 +254,17 @@ class CF_Http
         curl_setopt($curl_ch, CURLOPT_HEADERFUNCTION,array(&$this,'_auth_hdr_cb'));
         curl_setopt($curl_ch, CURLOPT_CONNECTTIMEOUT, 10);
         curl_setopt($curl_ch, CURLOPT_URL, $url);
-        curl_exec($curl_ch);
+        $result = curl_exec($curl_ch);
+		
+		$curl_info = curl_getinfo($curl_ch);
+		if (!$result || curl_errno($curl_ch) !== 0) {
+			CakeLog::write('gearman-resize-image-curl-debug', print_r($curl_info, TRUE));
+			CakeLog::write('gearman-resize-image-curl-debug', print_r(curl_error($curl_ch), TRUE));
+			if (strlen($result) > 1) {
+				CakeLog::write('gearman-resize-image-curl-debug', print_r($result, TRUE));
+			}
+		}
+
         curl_close($curl_ch);
 
         return array($this->response_status, $this->response_reason,
