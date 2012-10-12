@@ -1969,11 +1969,11 @@ class CF_Object
             return;
             
         if (function_exists("finfo_open")) {
-            $local_magic = dirname(__FILE__) . "/share/magic";
-            $finfo = @finfo_open(FILEINFO_MIME, $local_magic);
-
-            if (!$finfo) 
-                $finfo = @finfo_open(FILEINFO_MIME);
+//            $local_magic = dirname(__FILE__) . "/share/magic";
+//            $finfo = @finfo_open(FILEINFO_MIME, $local_magic);
+//
+//            if (!$finfo)
+			$finfo = @finfo_open(FILEINFO_MIME);
                 
             if ($finfo) {
 
