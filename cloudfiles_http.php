@@ -1533,28 +1533,12 @@ class CF_Http
         curl_setopt($this->connections[$conn_type],
             CURLOPT_URL, $url_path);
 
-		$result = curl_exec($this->connections[$conn_type]);
-		$curl_info = curl_getinfo($this->connections[$conn_type]);
-		$curl_info['method'] = $method;
-        if (!$result && curl_errno($this->connections[$conn_type]) !== 0) {
+        if (!curl_exec($this->connections[$conn_type]) && curl_errno($this->connections[$conn_type]) !== 0) {
             $this->error_str = "(curl error: "
                 . curl_errno($this->connections[$conn_type]) . ") ";
             $this->error_str .= curl_error($this->connections[$conn_type]);
-			CakeLog::write('gearman-resize-image-curl-debug', print_r($curl_info, TRUE));
-			CakeLog::write('gearman-resize-image-curl-debug', print_r(curl_error($this->connections[$conn_type]), TRUE));
-			if (strlen($result) > 1) {
-				CakeLog::write('gearman-resize-image-curl-debug', print_r($result, TRUE));
-			}
             return False;
         }
-
-		if ($curl_info['http_code'] != 201) {
-			CakeLog::write('gearman-resize-image-curl-debug', print_r($curl_info, TRUE));
-			if (strlen($result) > 1) {
-				CakeLog::write('gearman-resize-image-curl-debug', print_r($result, TRUE));
-			}
-		}
-
         return curl_getinfo($this->connections[$conn_type], CURLINFO_HTTP_CODE);
     }
     
