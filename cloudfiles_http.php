@@ -1544,10 +1544,10 @@ class CF_Http
     
     function close()
     {
-        foreach ($this->connections as $cnx) {
+        foreach ($this->connections as $key => $cnx) {
             if (isset($cnx)) {
                 curl_close($cnx);
-                $this->connections[$cnx] = NULL;
+                $this->connections[$key] = NULL;
             }
         }
     }
